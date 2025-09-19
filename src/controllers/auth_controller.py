@@ -5,7 +5,7 @@ Authentication controller for VocabLoury application
 import customtkinter as ctk
 from views.auth_views import LoginPage, SignupPage
 from views.main_views import MainApplication
-from config.settings import WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT, THEME_MODE
+from config.settings import WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT, THEME_MODE, COLORS
 
 
 class AuthenticationApp:
@@ -15,10 +15,19 @@ class AuthenticationApp:
         self.window.geometry(f"{WINDOW_WIDTH}x{WINDOW_HEIGHT}")
         self.window.resizable(True, True)
         
+        # Set application icon
+        try:
+            self.window.iconbitmap("app_icon_64.png")
+        except:
+            pass  # Icon setting is optional
+        
+        # Set theme-based background
+        self.window.configure(fg_color=COLORS[THEME_MODE]["bg"])
+        
         # Add window close handler
         self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
         
-        self.container = ctk.CTkFrame(self.window, fg_color="transparent")
+        self.container = ctk.CTkFrame(self.window, fg_color=COLORS[THEME_MODE]["bg"])
         self.container.pack(fill="both", expand=True)
         
         self.current_page = None

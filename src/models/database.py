@@ -94,7 +94,6 @@ class DatabaseManager:
     def create_user(self, username, email, password, profession):
         """Create a new user"""
         try:
-            print(f"Attempting to create user: {username}, {email}, {profession}")
             conn = sqlite3.connect(self.db_file)
             cursor = conn.cursor()
             
@@ -107,18 +106,15 @@ class DatabaseManager:
             ''', (username, email, password_hash, salt, profession))
             
             conn.commit()
-            print("User created successfully!")
             return True, "User created successfully!"
         except sqlite3.IntegrityError as e:
-            print(f"IntegrityError: {e}")
             if "username" in str(e):
                 return False, "Username already exists!"
             elif "email" in str(e):
                 return False, "Email already exists!"
             return False, "An error occurred!"
         except sqlite3.Error as e:
-            print(f"Database error: {e}")
-            return False, f"Database error: {e}"
+            return False, f"Database error: {str(e)}"
         finally:
             conn.close()
     
