@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VocabLoury - Professional Dictionary & Learning App</title>
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/themes.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="favicon.png" type="image/png">
+    <link rel="shortcut icon" href="favicon.png" type="image/png">
+    
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary, #1a1a1a);
+            color: var(--text-primary, #ffffff);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* App layout */
+        .app-container {
+            min-height: 100vh;
+            display: flex;
+        }
+        
+        .sidebar {
+            width: 280px;
+            background: var(--bg-secondary, #2b2b2b);
+            border-right: 1px solid var(--border, #444444);
+            padding: 2rem 1.5rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+        
+        .main-content {
+            margin-left: 280px;
+            flex: 1;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar styles */
+        .sidebar-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border, #444444);
+        }
+        
+        .sidebar-logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 50%;
+        }
+        
+        .sidebar-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 2rem;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .sidebar-username {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary, #ffffff);
+            margin-bottom: 0.5rem;
+        }
+        
+        .sidebar-profession {
+            font-size: 0.875rem;
+            color: var(--text-muted, #999999);
+        }
+        
+        /* Navigation */
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.25rem;
+            border-radius: 12px;
+            color: var(--text-secondary, #cccccc);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-item:hover {
+            background: var(--bg-tertiary, #333333);
+            color: var(--text-primary, #ffffff);
+            transform: translateX(4px);
+        }
+        
+        .nav-item.active {
+            background: var(--accent, #3b82f6);
+            color: white;
+        }
+        
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* Content area */
+        .page {
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        .page-header {
+            margin-bottom: 2rem;
+        }
+        
+        .page-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .page-header p {
+            font-size: 1.125rem;
+            color: var(--text-secondary, #cccccc);
+        }
+        
+        /* Cards */
+        .card {
+            background: var(--bg-secondary, #2b2b2b);
+            border: 1px solid var(--border, #444444);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            transform: translateY(-2px);
+        }
+        
+        .card-header {
+            border-bottom: 1px solid var(--border, #444444);
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary, #ffffff);
+            margin: 0;
+        }
+        
+        /* Stats grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: var(--bg-secondary, #2b2b2b);
+            border: 1px solid var(--border, #444444);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent, #3b82f6);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-muted, #999999);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: white;
+        }
+        
+        .btn-info {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+        }
+        
+        /* Search container */
+        .search-container {
+            background: var(--bg-secondary, #2b2b2b);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .search-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .search-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .search-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary, #ffffff);
+        }
+        
+        .search-form {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 1rem 1.25rem;
+            border: 2px solid var(--border, #444444);
+            border-radius: 12px;
+            background: var(--bg-primary, #1a1a1a);
+            color: var(--text-primary, #ffffff);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent, #3b82f6);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+        
+        .search-button {
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .search-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        /* Alphabet grid */
+        .alphabet-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .alphabet-btn {
+            width: 60px;
+            height: 60px;
+            border: 2px solid var(--border, #444444);
+            border-radius: 12px;
+            background: var(--bg-secondary, #2b2b2b);
+            color: var(--text-primary, #ffffff);
+            font-size: 1.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .alphabet-btn:hover {
+            background: var(--accent, #3b82f6);
+            border-color: var(--accent, #3b82f6);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+        
+        .alphabet-btn.active {
+            background: var(--accent, #3b82f6);
+            border-color: var(--accent, #3b82f6);
+            color: white;
+        }
+        
+        /* Word results */
+        .word-result {
+            background: var(--bg-secondary, #2b2b2b);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-left: 4px solid var(--accent, #3b82f6);
+            transition: all 0.3s ease;
+        }
+        
+        .word-result:hover {
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            transform: translateY(-2px);
+        }
+        
+        .word-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+        
+        .word-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent, #3b82f6);
+            margin: 0;
+        }
+        
+        .word-phonetic {
+            color: var(--text-muted, #999999);
+            font-style: italic;
+            font-size: 1.125rem;
+        }
+        
+        .word-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .word-action-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border, #444444);
+            border-radius: 8px;
+            background: var(--bg-primary, #1a1a1a);
+            color: var(--text-primary, #ffffff);
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .word-action-btn:hover {
+            background: var(--accent, #3b82f6);
+            color: white;
+            border-color: var(--accent, #3b82f6);
+        }
+        
+        /* Loading states */
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border, #444444);
+            border-top: 4px solid var(--accent, #3b82f6);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            text-align: center;
+            color: var(--text-muted, #999999);
+            font-size: 1rem;
+            margin-top: 1rem;
+        }
+        
+        /* Empty states */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--text-muted, #999999);
+        }
+        
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            opacity: 0.5;
+        }
+        
+        .empty-state-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-secondary, #cccccc);
+        }
+        
+        .empty-state-text {
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-form {
+                flex-direction: column;
+            }
+            
+            .alphabet-grid {
+                grid-template-columns: repeat(6, 1fr);
+            }
+            
+            .alphabet-btn {
+                width: 100%;
+                height: 50px;
+                font-size: 1.25rem;
+            }
+        }
+        
+        /* Theme toggle button */
+        .theme-toggle {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: var(--accent, #3b82f6);
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        
+        .theme-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        
+        /* Quick actions */
+        .quick-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        /* Animations */
+        .animate-fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <img src="images/logo.png" alt="VocabLoury Logo" class="logo-image">
+                </div>
+                <div class="sidebar-username" id="username">Welcome</div>
+                <div class="sidebar-profession" id="profession">User</div>
+            </div>
+            
+            <nav class="nav">
+                <a href="#" class="nav-item active" data-page="dashboard">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" data-page="profile">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </a>
+                <a href="#" class="nav-item" data-page="dictionary">
+                    <i class="fas fa-book"></i>
+                    <span>Dictionary</span>
+                </a>
+                <a href="#" class="nav-item" data-page="alphabet">
+                    <i class="fas fa-sort-alpha-down"></i>
+                    <span>Find by Alphabet</span>
+                </a>
+                <a href="#" class="nav-item" data-page="saved">
+                    <i class="fas fa-star"></i>
+                    <span>Saved Words</span>
+                </a>
+                <a href="#" class="nav-item" data-page="learning">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Word Learning</span>
+                </a>
+            </nav>
+            
+            <button class="btn btn-danger" id="logoutBtn" style="margin-top: auto;">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Page -->
+            <div id="dashboardPage" class="page active">
+                <div class="page-header">
+                    <h1>Welcome back, <span id="dashboardUsername">User</span>! 👋</h1>
+                    <p>Ready to expand your vocabulary?</p>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">📚</div>
+                        <div class="stat-value" id="totalWords">0</div>
+                        <div class="stat-label">Total Words</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⭐</div>
+                        <div class="stat-value" id="savedWords">0</div>
+                        <div class="stat-label">Saved Words</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🎯</div>
+                        <div class="stat-value" id="learningStreak">0</div>
+                        <div class="stat-label">Learning Streak</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📈</div>
+                        <div class="stat-value" id="progress">0%</div>
+                        <div class="stat-label">Progress</div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Quick Actions</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="quick-actions">
+                            <button class="btn btn-primary" data-action="search">
+                                <i class="fas fa-search"></i>
+                                <span>Search Word</span>
+                            </button>
+                            <button class="btn btn-success" data-action="browse">
+                                <i class="fas fa-book-open"></i>
+                                <span>Browse Dictionary</span>
+                            </button>
+                            <button class="btn btn-warning" data-action="learn">
+                                <i class="fas fa-graduation-cap"></i>
+                                <span>Start Learning</span>
+                            </button>
+                            <button class="btn btn-info" data-action="saved">
+                                <i class="fas fa-star"></i>
+                                <span>View Saved</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Dictionary Page -->
+            <div id="dictionaryPage" class="page">
+                <div class="search-container">
+                    <div class="search-header">
+                        <div class="search-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <h2 class="search-title">Dictionary Search</h2>
+                    </div>
+                    
+                    <form class="search-form" id="searchForm">
+                        <input type="text" class="search-input" id="searchInput" placeholder="Enter a word to search...">
+                        <button type="submit" class="search-button">
+                            <i class="fas fa-search"></i>
+                            <span>Search</span>
+                        </button>
+                    </form>
+                </div>
+                
+                <div id="searchResults"></div>
+            </div>
+            
+            <!-- Alphabet Search Page -->
+            <div id="alphabetPage" class="page">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Find Words by Alphabet</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="alphabet-grid" id="alphabetGrid">
+                            <!-- Alphabet buttons will be generated here -->
+                        </div>
+                        <div id="alphabetResults"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Other pages -->
+            <div id="profilePage" class="page">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Profile Settings</h3>
+                    </div>
+                    <div class="card-body">
+                        <p>Profile page content will be implemented here.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="savedPage" class="page">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Saved Words</h3>
+                    </div>
+                    <div class="card-body">
+                        <p>Saved words page content will be implemented here.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="learningPage" class="page">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Word Learning</h3>
+                    </div>
+                    <div class="card-body">
+                        <p>Word learning page content will be implemented here.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" id="themeToggle">🌙</button>
+    
+    <!-- JavaScript -->
+    <script>
+        // Application JavaScript
+        class VocabLouryApp {
+            constructor() {
+                this.currentPage = 'dashboard';
+                this.currentTheme = 'dark';
+                this.init();
+            }
+            
+            init() {
+                this.setupNavigation();
+                this.setupAlphabetGrid();
+                this.setupSearchForm();
+                this.setupQuickActions();
+                this.setupThemeToggle();
+                this.loadUserData();
+                this.animateStats();
+            }
+            
+            setupNavigation() {
+                const navItems = document.querySelectorAll('.nav-item');
+                navItems.forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const page = item.dataset.page;
+                        this.showPage(page);
+                        this.setActiveNavItem(item);
+                    });
+                });
+            }
+            
+            setupAlphabetGrid() {
+                const grid = document.getElementById('alphabetGrid');
+                const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+                
+                alphabet.forEach(letter => {
+                    const button = document.createElement('button');
+                    button.className = 'alphabet-btn';
+                    button.textContent = letter;
+                    button.addEventListener('click', () => {
+                        this.searchByAlphabet(letter);
+                        this.setActiveAlphabetButton(button);
+                    });
+                    grid.appendChild(button);
+                });
+            }
+            
+            setupSearchForm() {
+                const form = document.getElementById('searchForm');
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const input = document.getElementById('searchInput');
+                    const word = input.value.trim();
+                    if (word) {
+                        this.searchWord(word);
+                    }
+                });
+            }
+            
+            setupQuickActions() {
+                const actionButtons = document.querySelectorAll('[data-action]');
+                actionButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        const action = button.dataset.action;
+                        this.handleQuickAction(action);
+                    });
+                });
+            }
+            
+            setupThemeToggle() {
+                const toggle = document.getElementById('themeToggle');
+                toggle.addEventListener('click', () => {
+                    this.toggleTheme();
+                });
+            }
+            
+            showPage(pageId) {
+                // Hide all pages
+                const pages = document.querySelectorAll('.page');
+                pages.forEach(page => page.classList.remove('active'));
+                
+                // Show selected page
+                const targetPage = document.getElementById(pageId + 'Page');
+                if (targetPage) {
+                    targetPage.classList.add('active');
+                    this.currentPage = pageId;
+                }
+            }
+            
+            setActiveNavItem(activeItem) {
+                const navItems = document.querySelectorAll('.nav-item');
+                navItems.forEach(item => item.classList.remove('active'));
+                activeItem.classList.add('active');
+            }
+            
+            setActiveAlphabetButton(activeButton) {
+                const buttons = document.querySelectorAll('.alphabet-btn');
+                buttons.forEach(btn => btn.classList.remove('active'));
+                activeButton.classList.add('active');
+            }
+            
+            searchWord(word) {
+                const resultsDiv = document.getElementById('searchResults');
+                resultsDiv.innerHTML = `
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text">Searching for "${word}"...</div>
+                `;
+                
+                // Simulate API call
+                setTimeout(() => {
+                    resultsDiv.innerHTML = `
+                        <div class="word-result animate-fade-in">
+                            <div class="word-header">
+                                <div>
+                                    <h2 class="word-title">${word}</h2>
+                                    <p class="word-phonetic">/${word.toLowerCase()}/</p>
+                                </div>
+                                <div class="word-actions">
+                                    <button class="word-action-btn">Save</button>
+                                    <button class="word-action-btn">Share</button>
+                                </div>
+                            </div>
+                            <div class="meaning-section">
+                                <h4 style="color: var(--text-primary); margin-bottom: 1rem;">Definition</h4>
+                                <div style="background: var(--bg-primary); padding: 1rem; border-radius: 8px; border-left: 3px solid var(--accent);">
+                                    <p style="color: var(--text-secondary); line-height: 1.6;">A sample definition for the word "${word}". This is a placeholder definition that would be replaced with actual API data from the dictionary service.</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }, 1500);
+            }
+            
+            searchByAlphabet(letter) {
+                const resultsDiv = document.getElementById('alphabetResults');
+                resultsDiv.innerHTML = `
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text">Loading words starting with "${letter}"...</div>
+                `;
+                
+                // Simulate API call
+                setTimeout(() => {
+                    const sampleWords = {
+                        'A': ['Apple', 'Amazing', 'Awesome', 'Adventure', 'Achievement'],
+                        'B': ['Beautiful', 'Brilliant', 'Brave', 'Bright', 'Bold'],
+                        'C': ['Creative', 'Courageous', 'Clever', 'Confident', 'Curious'],
+                        'D': ['Determined', 'Dynamic', 'Dedicated', 'Diligent', 'Daring']
+                    };
+                    
+                    const words = sampleWords[letter] || ['Word1', 'Word2', 'Word3'];
+                    
+                    if (words.length > 0) {
+                        resultsDiv.innerHTML = words.map(word => `
+                            <div class="word-result animate-fade-in">
+                                <div class="word-header">
+                                    <div>
+                                        <h3 class="word-title">${word}</h3>
+                                        <p class="word-phonetic">/${word.toLowerCase()}/</p>
+                                    </div>
+                                    <div class="word-actions">
+                                        <button class="word-action-btn">View</button>
+                                        <button class="word-action-btn">Save</button>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('');
+                    } else {
+                        resultsDiv.innerHTML = `
+                            <div class="empty-state">
+                                <div class="empty-state-icon">🔍</div>
+                                <h3 class="empty-state-title">No words found</h3>
+                                <p class="empty-state-text">No words starting with "${letter}" were found.</p>
+                            </div>
+                        `;
+                    }
+                }, 1000);
+            }
+            
+            handleQuickAction(action) {
+                switch(action) {
+                    case 'search':
+                        this.showPage('dictionary');
+                        setTimeout(() => document.getElementById('searchInput').focus(), 100);
+                        break;
+                    case 'browse':
+                        this.showPage('alphabet');
+                        break;
+                    case 'learn':
+                        this.showPage('learning');
+                        break;
+                    case 'saved':
+                        this.showPage('saved');
+                        break;
+                }
+            }
+            
+            toggleTheme() {
+                this.currentTheme = this.currentTheme === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', this.currentTheme);
+                
+                const toggle = document.getElementById('themeToggle');
+                toggle.textContent = this.currentTheme === 'dark' ? '🌙' : '☀️';
+                
+                // Update CSS variables
+                const root = document.documentElement;
+                if (this.currentTheme === 'light') {
+                    root.style.setProperty('--bg-primary', '#ffffff');
+                    root.style.setProperty('--bg-secondary', '#f8fafc');
+                    root.style.setProperty('--bg-tertiary', '#f1f5f9');
+                    root.style.setProperty('--text-primary', '#1e293b');
+                    root.style.setProperty('--text-secondary', '#475569');
+                    root.style.setProperty('--text-muted', '#64748b');
+                    root.style.setProperty('--border', '#e2e8f0');
+                } else {
+                    root.style.setProperty('--bg-primary', '#1a1a1a');
+                    root.style.setProperty('--bg-secondary', '#2b2b2b');
+                    root.style.setProperty('--bg-tertiary', '#333333');
+                    root.style.setProperty('--text-primary', '#ffffff');
+                    root.style.setProperty('--text-secondary', '#cccccc');
+                    root.style.setProperty('--text-muted', '#999999');
+                    root.style.setProperty('--border', '#444444');
+                }
+            }
+            
+            loadUserData() {
+                // Simulate loading user data
+                const username = localStorage.getItem('vocabloury-username') || 'User';
+                const profession = localStorage.getItem('vocabloury-profession') || 'Student';
+                
+                document.getElementById('username').textContent = username;
+                document.getElementById('profession').textContent = profession;
+                document.getElementById('dashboardUsername').textContent = username;
+            }
+            
+            animateStats() {
+                // Animate statistics counters
+                setTimeout(() => {
+                    this.animateCounter(document.getElementById('totalWords'), 0, 42);
+                    this.animateCounter(document.getElementById('savedWords'), 0, 15);
+                    this.animateCounter(document.getElementById('learningStreak'), 0, 7);
+                    document.getElementById('progress').textContent = '85%';
+                }, 1000);
+            }
+            
+            animateCounter(element, start, end, duration = 2000) {
+                let startTime = null;
+                const startValue = parseInt(start);
+                const endValue = parseInt(end);
+
+                const animate = (timestamp) => {
+                    if (!startTime) startTime = timestamp;
+                    const progress = Math.min((timestamp - startTime) / duration, 1);
+                    const currentValue = Math.floor(startValue + (endValue - startValue) * this.easeOutCubic(progress));
+                    
+                    element.textContent = currentValue;
+                    
+                    if (progress < 1) {
+                        requestAnimationFrame(animate);
+                    }
+                };
+
+                requestAnimationFrame(animate);
+            }
+            
+            easeOutCubic(t) {
+                return 1 - Math.pow(1 - t, 3);
+            }
+        }
+        
+        // Initialize app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            window.vocabLouryApp = new VocabLouryApp();
+        });
+    </script>
+</body>
+</html>
