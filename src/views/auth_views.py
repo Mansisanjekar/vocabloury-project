@@ -8,10 +8,10 @@ from tkinter import messagebox
 import os
 from PIL import Image, ImageTk
 
-from models.database import DatabaseManager
-from utils.validation import FormValidator
-from utils.animations import AnimatedBackground, AnimatedButton, darken_color
-from utils.icons import Icons
+from src.models.database import DatabaseManager
+from src.utils.validation import FormValidator
+from src.utils.animations import AnimatedBackground, AnimatedButton, darken_color
+from src.utils.icons import Icons
 from config.settings import COLORS, THEME_MODE
 
 
@@ -47,15 +47,23 @@ class LoginPage(ctk.CTkFrame):
         main_container = ctk.CTkFrame(self.animated_bg, fg_color="transparent")
         main_container.pack(fill="both", expand=True, padx=20, pady=20)
         
-        # Create split layout
+        # Create split layout with scrolling
         left_frame = ctk.CTkFrame(main_container, fg_color=COLORS[THEME_MODE]["bg"], corner_radius=20)
         left_frame.pack(side="left", fill="both", expand=True, padx=(0, 10))
+        
+        # Add scrollable frame to left side
+        left_scroll = ctk.CTkScrollableFrame(left_frame, fg_color="transparent")
+        left_scroll.pack(fill="both", expand=True, padx=5, pady=5)
         
         right_frame = ctk.CTkFrame(main_container, fg_color=COLORS[THEME_MODE]["secondary_bg"], corner_radius=20)
         right_frame.pack(side="right", fill="both", expand=True, padx=(10, 0))
         
+        # Add scrollable frame to right side
+        right_scroll = ctk.CTkScrollableFrame(right_frame, fg_color="transparent")
+        right_scroll.pack(fill="both", expand=True, padx=5, pady=5)
+        
         # Left side - Login Form
-        form_frame = ctk.CTkFrame(left_frame, fg_color="transparent")
+        form_frame = ctk.CTkFrame(left_scroll, fg_color="transparent")
         form_frame.pack(pady=20, padx=40, expand=True)
         
         # Header with logo
@@ -188,11 +196,11 @@ class LoginPage(ctk.CTkFrame):
         forgot_button.pack()
         
         # Right side - Project Information
-        self.create_project_info(right_frame)
+        self.create_project_info(right_scroll)
     
     def create_project_info(self, parent):
         """Create project information with typing animation"""
-        from utils.animations import TypingAnimation
+        from src.utils.animations import TypingAnimation
         
         # Header
         header_frame = ctk.CTkFrame(parent, fg_color="transparent")
@@ -391,15 +399,23 @@ class SignupPage(ctk.CTkFrame):
         main_container = ctk.CTkFrame(self.animated_bg, fg_color="transparent")
         main_container.pack(fill="both", expand=True, padx=20, pady=20)
         
-        # Create split layout
+        # Create split layout with scrolling
         left_frame = ctk.CTkFrame(main_container, fg_color=COLORS[THEME_MODE]["bg"], corner_radius=20)
         left_frame.pack(side="left", fill="both", expand=True, padx=(0, 10))
+        
+        # Add scrollable frame to left side
+        left_scroll = ctk.CTkScrollableFrame(left_frame, fg_color="transparent")
+        left_scroll.pack(fill="both", expand=True, padx=5, pady=5)
         
         right_frame = ctk.CTkFrame(main_container, fg_color=COLORS[THEME_MODE]["secondary_bg"], corner_radius=20)
         right_frame.pack(side="right", fill="both", expand=True, padx=(10, 0))
         
+        # Add scrollable frame to right side
+        right_scroll = ctk.CTkScrollableFrame(right_frame, fg_color="transparent")
+        right_scroll.pack(fill="both", expand=True, padx=5, pady=5)
+        
         # Left side - Signup Form
-        form_frame = ctk.CTkFrame(left_frame, fg_color="transparent")
+        form_frame = ctk.CTkFrame(left_scroll, fg_color="transparent")
         form_frame.pack(pady=20, padx=50, expand=True)
         
         # Header with logo
@@ -587,11 +603,11 @@ class SignupPage(ctk.CTkFrame):
         login_button.pack(side="left")
         
         # Right side - Project Information
-        self.create_project_info(right_frame)
+        self.create_project_info(right_scroll)
     
     def create_project_info(self, parent):
         """Create project information with typing animation"""
-        from utils.animations import TypingAnimation
+        from src.utils.animations import TypingAnimation
         
         # Header
         header_frame = ctk.CTkFrame(parent, fg_color="transparent")

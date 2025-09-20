@@ -6,8 +6,8 @@ import customtkinter as ctk
 from tkinter import messagebox
 import os
 
-from models.database import DatabaseManager
-from utils.icons import Icons
+from src.models.database import DatabaseManager
+from src.utils.icons import Icons
 from config.settings import COLORS, THEME_MODE
 from PIL import Image, ImageTk
 
@@ -56,8 +56,12 @@ class MainApplication(ctk.CTkFrame):
         self.sidebar.pack(side="left", fill="y", padx=(0, 15))
         self.sidebar.pack_propagate(False)
         
+        # Create scrollable frame for sidebar content
+        self.sidebar_scroll = ctk.CTkScrollableFrame(self.sidebar, fg_color="transparent")
+        self.sidebar_scroll.pack(fill="both", expand=True, padx=5, pady=5)
+        
         # Header with user info
-        header_frame = ctk.CTkFrame(self.sidebar, fg_color="transparent")
+        header_frame = ctk.CTkFrame(self.sidebar_scroll, fg_color="transparent")
         header_frame.pack(fill="x", padx=25, pady=25)
         
         # User avatar with logo
@@ -124,10 +128,13 @@ class MainApplication(ctk.CTkFrame):
         # Navigation menu
         self.create_navigation_menu()
         
-        # Logout button at bottom
+        # Bottom buttons frame
+        bottom_frame = ctk.CTkFrame(self.sidebar_scroll, fg_color="transparent")
+        bottom_frame.pack(fill="x", padx=25, pady=(20, 25))
+        
         # Theme toggle button
         theme_btn = ctk.CTkButton(
-            self.sidebar,
+            bottom_frame,
             text="🌙 Dark Mode" if self.current_theme == "light" else "☀️ Light Mode",
             width=200,
             height=40,
@@ -137,10 +144,10 @@ class MainApplication(ctk.CTkFrame):
             corner_radius=10,
             font=("Inter", 12, "bold")
         )
-        theme_btn.pack(side="bottom", pady=(20, 10), padx=20)
+        theme_btn.pack(pady=(0, 10))
         
         logout_btn = ctk.CTkButton(
-            self.sidebar,
+            bottom_frame,
             text="Logout",
             width=200,
             height=40,
@@ -150,7 +157,7 @@ class MainApplication(ctk.CTkFrame):
             corner_radius=10,
             font=("Inter", 12, "bold")
         )
-        logout_btn.pack(side="bottom", pady=(0, 20), padx=20)
+        logout_btn.pack()
     
     def toggle_theme(self):
         """Toggle between light and dark theme"""
@@ -172,7 +179,7 @@ class MainApplication(ctk.CTkFrame):
     
     def create_navigation_menu(self):
         """Create navigation menu items"""
-        menu_frame = ctk.CTkFrame(self.sidebar, fg_color="transparent")
+        menu_frame = ctk.CTkFrame(self.sidebar_scroll, fg_color="transparent")
         menu_frame.pack(fill="x", padx=25, pady=20)
         
         # Menu items
@@ -316,7 +323,7 @@ class DashboardPage(ctk.CTkFrame):
         self.current_theme = THEME_MODE
         
         # Import API for floating words
-        from api.dictionary_api import DictionaryAPI
+        from src.api.dictionary_api import DictionaryAPI
         self.dictionary_api = DictionaryAPI()
         
         # Create dashboard content
@@ -324,8 +331,12 @@ class DashboardPage(ctk.CTkFrame):
     
     def create_dashboard(self):
         """Create the dashboard content"""
+        # Create scrollable frame for dashboard content
+        scrollable_frame = ctk.CTkScrollableFrame(self, fg_color="transparent")
+        scrollable_frame.pack(fill="both", expand=True, padx=10, pady=10)
+        
         # Header
-        header_frame = ctk.CTkFrame(self, fg_color="transparent")
+        header_frame = ctk.CTkFrame(scrollable_frame, fg_color="transparent")
         header_frame.pack(fill="x", padx=40, pady=40)
         
         # Welcome section with gradient text effect
@@ -349,10 +360,10 @@ class DashboardPage(ctk.CTkFrame):
         subtitle_label.pack(anchor="w", pady=(10, 0))
         
         # Floating words animation
-        self.create_floating_words_section()
+        self.create_floating_words_section(scrollable_frame)
         
         # Stats cards
-        self.create_enhanced_stats_cards()
+        self.create_enhanced_stats_cards(scrollable_frame)
         
         # Charts section
         self.create_charts_section()
@@ -360,10 +371,10 @@ class DashboardPage(ctk.CTkFrame):
         # Quick actions
         self.create_quick_actions()
     
-    def create_floating_words_section(self):
+    def create_floating_words_section(self, parent):
         """Create floating words animation section"""
         # Floating words container
-        floating_frame = ctk.CTkFrame(self, fg_color=COLORS[THEME_MODE]["secondary_bg"], corner_radius=15)
+        floating_frame = ctk.CTkFrame(parent, fg_color=COLORS[THEME_MODE]["secondary_bg"], corner_radius=15)
         floating_frame.pack(fill="x", padx=40, pady=(0, 20))
         
         # Section title
@@ -491,9 +502,9 @@ class DashboardPage(ctk.CTkFrame):
         # Schedule next word (change every 4 seconds)
         self.after(4000, self.animate_floating_word)
     
-    def create_enhanced_stats_cards(self):
+    def create_enhanced_stats_cards(self, parent):
         """Create enhanced statistics cards with better data"""
-        stats_frame = ctk.CTkFrame(self, fg_color="transparent")
+        stats_frame = ctk.CTkFrame(parent, fg_color="transparent")
         stats_frame.pack(fill="x", padx=40, pady=30)
         
         # Get user stats
@@ -994,8 +1005,12 @@ class ProfilePage(ctk.CTkFrame):
         # Get real user data
         user_data = self.get_user_data()
         
+        # Create scrollable frame for profile content
+        scrollable_frame = ctk.CTkScrollableFrame(self, fg_color="transparent")
+        scrollable_frame.pack(fill="both", expand=True, padx=10, pady=10)
+        
         # Header
-        header_frame = ctk.CTkFrame(self, fg_color="transparent")
+        header_frame = ctk.CTkFrame(scrollable_frame, fg_color="transparent")
         header_frame.pack(fill="x", padx=40, pady=40)
         
         # Profile title
@@ -1008,7 +1023,7 @@ class ProfilePage(ctk.CTkFrame):
         title_label.pack(anchor="w", pady=(0, 20))
         
         # Main content container
-        main_container = ctk.CTkFrame(self, fg_color="transparent")
+        main_container = ctk.CTkFrame(scrollable_frame, fg_color="transparent")
         main_container.pack(fill="both", expand=True, padx=40, pady=(0, 40))
         
         # Left side - Personal Info
