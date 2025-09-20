@@ -8,12 +8,12 @@ THEME_MODE = "dark"
 # Color schemes
 COLORS = {
     "dark": {
-        "bg": "#1a1a1a",
-        "secondary_bg": "#2b2b2b",
-        "accent": "#1f538d",
-        "text": "#ffffff",
-        "text_secondary": "#cccccc",
-        "border": "#444444"
+        "bg": "#000000",  # Pure black background
+        "secondary_bg": "#1a1a1a",  # Dark gray secondary background
+        "accent": "#1f538d",  # Professional blue accent
+        "text": "#ffffff",  # Pure white text
+        "text_secondary": "#cccccc",  # Light gray secondary text
+        "border": "#333333"  # Dark gray borders
     },
     "light": {
         "bg": "#ffffff",
@@ -42,8 +42,8 @@ DATAMUSE_API_BASE_URL = "https://api.datamuse.com/words"
 DATABASE_NAME = "authentication.db"
 
 # Animation settings
-ANIMATION_INTERVAL = 50  # milliseconds
-PARTICLE_COUNT = 20
+ANIMATION_INTERVAL = 30  # milliseconds (faster animation)
+PARTICLE_COUNT = 30  # More particles
 
 # Window settings
 WINDOW_WIDTH = 1400

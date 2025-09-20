@@ -1,54 +1,33 @@
 """
-Main entry point for VocabLoury application
+Main entry point for VocabLoury Desktop Application
 """
 
 import sys
 import os
-import argparse
+import customtkinter as ctk
 
 # Add src directory to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 
 from controllers.auth_controller import AuthenticationApp
-from config.settings import WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT
+from config.settings import WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT, THEME_MODE
 
 
-def handle_command_line():
-    """Handle command line arguments"""
-    parser = argparse.ArgumentParser(description="VocabLoury - Professional Dictionary & Learning App")
-    parser.add_argument("--notify", help="Username to show notification")
-    parser.add_argument("--web", action="store_true", help="Launch web interface")
-    parser.add_argument("--port", type=int, default=8000, help="Port for web server (default: 8000)")
-    args = parser.parse_args()
+def main():
+    """Main application entry point"""
+    print("🖥️  Starting VocabLoury Desktop Application...")
+    print("📚 Professional Dictionary & Learning App")
+    print("🎨 Modern UI with Black Theme")
+    print("✨ Enhanced Animations & Professional Design")
     
-    if args.notify:
-        # Show notification
-        from views.notifications import CustomNotification
-        notification = CustomNotification(args.notify, "Time to learn a new word!")
-        notification.mainloop()
-    elif args.web:
-        # Launch web interface
-        from utils.web_server import serve_static_files
-        print("🚀 Starting VocabLoury Web Interface...")
-        print(f"📱 Web interface will be available at: http://localhost:{args.port}")
-        print("💡 The web interface provides a modern, responsive UI with professional styling")
-        print("🎨 Features multiple themes, animations, and enhanced user experience")
-        print("⏹️  Press Ctrl+C to stop the server")
-        
-        try:
-            serve_static_files(args.port, open_browser=True)
-            # Keep the main thread alive
-            import time
-            while True:
-                time.sleep(1)
-        except KeyboardInterrupt:
-            print("\n👋 Web server stopped. Goodbye!")
-    else:
-        # Launch desktop application
-        print("🖥️  Starting VocabLoury Desktop Application...")
-        app = AuthenticationApp()
-        app.run()
+    # Set appearance mode
+    ctk.set_appearance_mode(THEME_MODE)
+    ctk.set_default_color_theme("blue")
+    
+    # Create and run the application
+    app = AuthenticationApp()
+    app.run()
 
 
 if __name__ == "__main__":
-    handle_command_line()
+    main()

@@ -8,10 +8,10 @@ from tkinter import messagebox
 import os
 from PIL import Image, ImageTk
 
-from models.database import DatabaseManager
-from utils.validation import FormValidator
-from utils.animations import AnimatedBackground, AnimatedButton, darken_color
-from utils.icons import Icons
+from src.models.database import DatabaseManager
+from src.utils.validation import FormValidator
+from src.utils.animations import AnimatedBackground, AnimatedButton, darken_color
+from src.utils.icons import Icons
 from config.settings import COLORS, THEME_MODE
 
 
@@ -47,15 +47,23 @@ class LoginPage(ctk.CTkFrame):
         main_container = ctk.CTkFrame(self.animated_bg, fg_color="transparent")
         main_container.pack(fill="both", expand=True, padx=20, pady=20)
         
-        # Create two frames for split screen
+        # Create split layout with scrolling
         left_frame = ctk.CTkFrame(main_container, fg_color=COLORS[THEME_MODE]["bg"], corner_radius=20)
         left_frame.pack(side="left", fill="both", expand=True, padx=(0, 10))
+        
+        # Add scrollable frame to left side
+        left_scroll = ctk.CTkScrollableFrame(left_frame, fg_color="transparent")
+        left_scroll.pack(fill="both", expand=True, padx=5, pady=5)
         
         right_frame = ctk.CTkFrame(main_container, fg_color=COLORS[THEME_MODE]["secondary_bg"], corner_radius=20)
         right_frame.pack(side="right", fill="both", expand=True, padx=(10, 0))
         
+        # Add scrollable frame to right side
+        right_scroll = ctk.CTkScrollableFrame(right_frame, fg_color="transparent")
+        right_scroll.pack(fill="both", expand=True, padx=5, pady=5)
+        
         # Left side - Login Form
-        form_frame = ctk.CTkFrame(left_frame, fg_color="transparent")
+        form_frame = ctk.CTkFrame(left_scroll, fg_color="transparent")
         form_frame.pack(pady=20, padx=40, expand=True)
         
         # Header with logo
@@ -175,60 +183,97 @@ class LoginPage(ctk.CTkFrame):
                                      font=("Inter", 12, "bold"))
         signup_button.pack(side="left")
         
-        # Right side - Welcome content
-        welcome_frame = ctk.CTkFrame(right_frame, fg_color="transparent")
-        welcome_frame.pack(expand=True, fill="both", padx=30, pady=30)
+        # Forgot password link
+        forgot_frame = ctk.CTkFrame(form_frame, fg_color="transparent")
+        forgot_frame.pack(pady=10)
         
-        # Welcome icon
-        welcome_icon_frame = ctk.CTkFrame(welcome_frame, fg_color=COLORS[THEME_MODE]["accent"], 
-                                        width=80, height=80, corner_radius=40)
-        welcome_icon_frame.pack(pady=(40, 20))
-        welcome_icon_frame.pack_propagate(False)
+        forgot_button = AnimatedButton(forgot_frame, text="Forgot Password?",
+                                     command=self.show_forgot_password,
+                                     fg_color="transparent", 
+                                     hover_color=COLORS[THEME_MODE]["accent"],
+                                     text_color=COLORS[THEME_MODE]["text_secondary"],
+                                     font=("Inter", 12))
+        forgot_button.pack()
         
-        welcome_icon = ctk.CTkLabel(welcome_icon_frame, text="V", 
-                                  font=("Inter", 32, "bold"),
-                                  text_color="white")
-        welcome_icon.pack(expand=True)
+        # Right side - Project Information
+        self.create_project_info(right_scroll)
+    
+    def create_project_info(self, parent):
+        """Create project information with typing animation"""
+        from src.utils.animations import TypingAnimation
         
-        # Welcome title
-        welcome_title = ctk.CTkLabel(welcome_frame, text="Welcome Back!", 
-                                   font=("Inter", 28, "bold"),
-                                   text_color=COLORS[THEME_MODE]["text"])
-        welcome_title.pack(pady=(0, 16))
+        # Header
+        header_frame = ctk.CTkFrame(parent, fg_color="transparent")
+        header_frame.pack(fill="x", padx=40, pady=40)
         
-        # Welcome subtitle
-        welcome_subtitle = ctk.CTkLabel(welcome_frame, 
-                                      text="Continue your vocabulary journey\nwith personalized learning",
-                                      font=("Inter", 16),
-                                      text_color=COLORS[THEME_MODE]["text_secondary"],
-                                      justify="center")
-        welcome_subtitle.pack(pady=(0, 30))
+        # App icon
+        try:
+            logo_image = Image.open("app_icon_64.png")
+            logo_photo = ctk.CTkImage(logo_image, size=(80, 80))
+            logo_label = ctk.CTkLabel(header_frame, image=logo_photo, text="")
+            logo_label.pack(pady=(0, 20))
+        except:
+            # Fallback icon
+            icon_frame = ctk.CTkFrame(header_frame, fg_color=COLORS[THEME_MODE]["accent"], 
+                                    width=80, height=80, corner_radius=40)
+            icon_frame.pack(pady=(0, 20))
+            icon_frame.pack_propagate(False)
+            
+            icon_label = ctk.CTkLabel(icon_frame, text="V", font=("Inter", 32, "bold"), text_color="white")
+            icon_label.pack(expand=True)
+        
+        # App title
+        title_label = ctk.CTkLabel(header_frame, text="VocabLoury", 
+                                 font=("Inter", 28, "bold"),
+                                 text_color=COLORS[THEME_MODE]["text"])
+        title_label.pack(pady=(0, 10))
+        
+        # Typing animation for subtitle
+        subtitle_label = ctk.CTkLabel(header_frame, text="", 
+                                    font=("Inter", 16),
+                                    text_color=COLORS[THEME_MODE]["text_secondary"])
+        subtitle_label.pack(pady=(0, 30))
+        
+        # Start typing animation
+        typing_animation = TypingAnimation(subtitle_label, "Professional Dictionary & Learning App", 80)
+        typing_animation.start()
+        
+        # Features section
+        features_frame = ctk.CTkFrame(parent, fg_color="transparent")
+        features_frame.pack(fill="both", expand=True, padx=40, pady=(0, 40))
+        
+        features_title = ctk.CTkLabel(features_frame, text="Features", 
+                                    font=("Inter", 20, "bold"),
+                                    text_color=COLORS[THEME_MODE]["text"])
+        features_title.pack(anchor="w", pady=(0, 20))
         
         # Features list
-        features_frame = ctk.CTkFrame(welcome_frame, fg_color="transparent")
-        features_frame.pack(expand=True)
-        
         features = [
-            ("•", "Personalized Dictionary"),
-            ("•", "Smart Learning System"),
-            ("•", "Progress Tracking"),
-            ("•", "Save Favorite Words")
+            "-> Comprehensive Dictionary",
+            "-> Alphabet Search",
+            "-> Save Favorite Words",
+            "-> Personalized Learning",
+            "-> Progress Tracking",
+            "-> Dark Theme"
         ]
         
-        for icon, text in features:
-            feature_frame = ctk.CTkFrame(features_frame, fg_color="transparent")
-            feature_frame.pack(fill="x", pady=8)
-            
-            feature_icon = ctk.CTkLabel(feature_frame, text=icon, 
-                                      font=("Inter", 16, "bold"),
-                                      text_color=COLORS[THEME_MODE]["accent"],
-                                      width=20)
-            feature_icon.pack(side="left", padx=(0, 12))
-            
-            feature_text = ctk.CTkLabel(feature_frame, text=text,
-                                      font=("Inter", 14),
-                                      text_color=COLORS[THEME_MODE]["text"])
-            feature_text.pack(side="left")
+        for feature in features:
+            feature_label = ctk.CTkLabel(features_frame, text=feature,
+                                       font=("Inter", 14),
+                                       text_color=COLORS[THEME_MODE]["text_secondary"],
+                                       anchor="w")
+            feature_label.pack(fill="x", pady=5)
+    
+    def show_forgot_password(self):
+        """Show forgot password dialog"""
+        from tkinter import messagebox, simpledialog
+        
+        email = simpledialog.askstring("Forgot Password", 
+                                     "Enter your email address to reset password:")
+        if email:
+            # Here you would implement actual password reset logic
+            messagebox.showinfo("Password Reset", 
+                              f"Password reset instructions sent to {email}")
     
     def validate_username_field(self, event=None):
         """Validate username field"""
@@ -255,44 +300,58 @@ class LoginPage(ctk.CTkFrame):
             self.password.configure(border_color=COLORS[THEME_MODE]["border"])
     
     def login(self):
-        username = self.username.get()
+        username = self.username.get().strip()
         password = self.password.get()
         
-        # Validate fields
-        username_valid, username_error = self.validator.validate_username(username)
-        password_valid, password_error = self.validator.validate_password(password)
-        
-        if not username_valid:
-            self.username_error.configure(text=username_error)
-            self.username.configure(border_color="#FF5252")
+        # Quick validation
+        if not username or not password:
+            messagebox.showerror("Error", "Please fill in all fields!")
             return
         
-        if not password_valid:
-            self.password_error.configure(text=password_error)
-            self.password.configure(border_color="#FF5252")
-            return
+        # Show loading state
+        self.show_loading_state()
         
-        # Clear any previous errors
-        self.username_error.configure(text="")
-        self.password_error.configure(text="")
-        self.username.configure(border_color=COLORS[THEME_MODE]["border"])
-        self.password.configure(border_color=COLORS[THEME_MODE]["border"])
-        
-        db = DatabaseManager()
-        success, user_id = db.verify_user(username, password)
-        
-        if success:
-            # Handle remember me
-            if self.remember.get():
-                token = db.create_remember_token(user_id)
-                if token:
-                    self.save_remember_token(token)
+        try:
+            # Use existing db instance or create one
+            if not hasattr(self, 'db'):
+                self.db = DatabaseManager()
             
-            self.destroy()
-            from views.main_views import MainApplication
-            MainApplication(self.master, username)
-        else:
-            messagebox.showerror("Error", "Invalid username or password!")
+            success, user_id = self.db.verify_user(username, password)
+            
+            if success:
+                # Handle remember me
+                if self.remember.get():
+                    token = self.db.create_remember_token(user_id)
+                    if token:
+                        self.save_remember_token(token)
+                
+                # Quick transition to main app
+                self.destroy()
+                from views.main_views import MainApplication
+                MainApplication(self.master, username)
+            else:
+                self.hide_loading_state()
+                messagebox.showerror("Error", "Invalid username or password!")
+                
+        except Exception as e:
+            self.hide_loading_state()
+            messagebox.showerror("Error", f"Login failed: {str(e)}")
+    
+    def show_loading_state(self):
+        """Show loading state during login"""
+        # Disable login button and show loading
+        for widget in self.winfo_children():
+            if isinstance(widget, ctk.CTkButton) and "Login" in widget.cget("text"):
+                widget.configure(text="Logging in...", state="disabled")
+                break
+    
+    def hide_loading_state(self):
+        """Hide loading state"""
+        # Re-enable login button
+        for widget in self.winfo_children():
+            if isinstance(widget, ctk.CTkButton) and "Logging in" in widget.cget("text"):
+                widget.configure(text="Login", state="normal")
+                break
     
     def save_remember_token(self, token):
         """Save remember me token to a file"""
@@ -340,16 +399,24 @@ class SignupPage(ctk.CTkFrame):
         main_container = ctk.CTkFrame(self.animated_bg, fg_color="transparent")
         main_container.pack(fill="both", expand=True, padx=20, pady=20)
         
-        # Create two frames for split screen
+        # Create split layout with scrolling
         left_frame = ctk.CTkFrame(main_container, fg_color=COLORS[THEME_MODE]["bg"], corner_radius=20)
         left_frame.pack(side="left", fill="both", expand=True, padx=(0, 10))
+        
+        # Add scrollable frame to left side
+        left_scroll = ctk.CTkScrollableFrame(left_frame, fg_color="transparent")
+        left_scroll.pack(fill="both", expand=True, padx=5, pady=5)
         
         right_frame = ctk.CTkFrame(main_container, fg_color=COLORS[THEME_MODE]["secondary_bg"], corner_radius=20)
         right_frame.pack(side="right", fill="both", expand=True, padx=(10, 0))
         
+        # Add scrollable frame to right side
+        right_scroll = ctk.CTkScrollableFrame(right_frame, fg_color="transparent")
+        right_scroll.pack(fill="both", expand=True, padx=5, pady=5)
+        
         # Left side - Signup Form
-        form_frame = ctk.CTkFrame(left_frame, fg_color="transparent")
-        form_frame.pack(pady=20, padx=40, expand=True)
+        form_frame = ctk.CTkFrame(left_scroll, fg_color="transparent")
+        form_frame.pack(pady=20, padx=50, expand=True)
         
         # Header with logo
         header_frame = ctk.CTkFrame(form_frame, fg_color="transparent")
@@ -500,14 +567,23 @@ class SignupPage(ctk.CTkFrame):
                                                  text_color="#FF5252", font=("Inter", 10))
         self.confirm_password_error.pack(anchor="w", pady=(2, 0))
         
+        # Terms and conditions
+        terms_frame = ctk.CTkFrame(fields_frame, fg_color="transparent")
+        terms_frame.pack(fill="x", pady=(10, 0))
+        
+        self.terms_checkbox = ctk.CTkCheckBox(terms_frame, text="I agree to the Terms and Conditions",
+                                            font=("Inter", 11),
+                                            text_color=COLORS[THEME_MODE]["text_secondary"])
+        self.terms_checkbox.pack(anchor="w")
+        
         # Sign up button with animation
-        signup_button = AnimatedButton(fields_frame, text="Sign Up", height=42,
-                                     corner_radius=8, 
+        signup_button = AnimatedButton(fields_frame, text="Create Account", height=45,
+                                     corner_radius=10, 
                                      command=self.signup,
-                                     font=("Inter", 14, "bold"),
+                                     font=("Inter", 16, "bold"),
                                      fg_color=COLORS[THEME_MODE]["accent"],
                                      hover_color=darken_color(COLORS[THEME_MODE]["accent"]))
-        signup_button.pack(fill="x", pady=(16, 20))
+        signup_button.pack(fill="x", pady=(20, 20))
         
         # Login link
         login_frame = ctk.CTkFrame(form_frame, fg_color="transparent")
@@ -526,60 +602,104 @@ class SignupPage(ctk.CTkFrame):
                                     font=("Inter", 12, "bold"))
         login_button.pack(side="left")
         
-        # Right side - Welcome content
-        welcome_frame = ctk.CTkFrame(right_frame, fg_color="transparent")
-        welcome_frame.pack(expand=True, fill="both", padx=30, pady=30)
+        # Right side - Project Information
+        self.create_project_info(right_scroll)
+    
+    def create_project_info(self, parent):
+        """Create project information with typing animation"""
+        from src.utils.animations import TypingAnimation
         
-        # Welcome icon
-        welcome_icon_frame = ctk.CTkFrame(welcome_frame, fg_color=COLORS[THEME_MODE]["accent"], 
-                                        width=80, height=80, corner_radius=40)
-        welcome_icon_frame.pack(pady=(40, 20))
-        welcome_icon_frame.pack_propagate(False)
+        # Header
+        header_frame = ctk.CTkFrame(parent, fg_color="transparent")
+        header_frame.pack(fill="x", padx=40, pady=40)
         
-        welcome_icon = ctk.CTkLabel(welcome_icon_frame, text="V", 
-                                  font=("Inter", 32, "bold"),
-                                  text_color="white")
-        welcome_icon.pack(expand=True)
+        # App icon
+        try:
+            logo_image = Image.open("app_icon_64.png")
+            logo_photo = ctk.CTkImage(logo_image, size=(80, 80))
+            logo_label = ctk.CTkLabel(header_frame, image=logo_photo, text="")
+            logo_label.pack(pady=(0, 20))
+        except:
+            # Fallback icon
+            icon_frame = ctk.CTkFrame(header_frame, fg_color=COLORS[THEME_MODE]["accent"], 
+                                    width=80, height=80, corner_radius=40)
+            icon_frame.pack(pady=(0, 20))
+            icon_frame.pack_propagate(False)
+            
+            icon_label = ctk.CTkLabel(icon_frame, text="V", font=("Inter", 32, "bold"), text_color="white")
+            icon_label.pack(expand=True)
         
-        # Welcome title
-        welcome_title = ctk.CTkLabel(welcome_frame, text="Join Our Community!", 
-                                   font=("Inter", 28, "bold"),
-                                   text_color=COLORS[THEME_MODE]["text"])
-        welcome_title.pack(pady=(0, 16))
+        # App title
+        title_label = ctk.CTkLabel(header_frame, text="VocabLoury", 
+                                 font=("Inter", 28, "bold"),
+                                 text_color=COLORS[THEME_MODE]["text"])
+        title_label.pack(pady=(0, 10))
         
-        # Welcome subtitle
-        welcome_subtitle = ctk.CTkLabel(welcome_frame, 
-                                      text="Start your vocabulary journey\nwith personalized learning",
-                                      font=("Inter", 16),
-                                      text_color=COLORS[THEME_MODE]["text_secondary"],
-                                      justify="center")
-        welcome_subtitle.pack(pady=(0, 30))
+        # Typing animation for subtitle
+        subtitle_label = ctk.CTkLabel(header_frame, text="", 
+                                    font=("Inter", 16),
+                                    text_color=COLORS[THEME_MODE]["text_secondary"])
+        subtitle_label.pack(pady=(0, 30))
+        
+        # Start typing animation
+        typing_animation = TypingAnimation(subtitle_label, "Join thousands of learners!", 80)
+        typing_animation.start()
+        
+        # Features section
+        features_frame = ctk.CTkFrame(parent, fg_color="transparent")
+        features_frame.pack(fill="both", expand=True, padx=40, pady=(0, 40))
+        
+        features_title = ctk.CTkLabel(features_frame, text="Why Choose VocabLoury?", 
+                                    font=("Inter", 20, "bold"),
+                                    text_color=COLORS[THEME_MODE]["text"])
+        features_title.pack(anchor="w", pady=(0, 20))
         
         # Features list
-        features_frame = ctk.CTkFrame(welcome_frame, fg_color="transparent")
-        features_frame.pack(expand=True)
-        
         features = [
-            ("•", "Personalized Dictionary"),
-            ("•", "Smart Learning System"),
-            ("•", "Progress Tracking"),
-            ("•", "Save Favorite Words")
+            "✓ Comprehensive Dictionary",
+            "✓ Alphabet Search",
+            "✓ Save Favorite Words",
+            "✓ Personalized Learning",
+            "✓ Progress Tracking",
+            "✓ Professional UI"
         ]
         
-        for icon, text in features:
-            feature_frame = ctk.CTkFrame(features_frame, fg_color="transparent")
-            feature_frame.pack(fill="x", pady=8)
+        for feature in features:
+            feature_label = ctk.CTkLabel(features_frame, text=feature,
+                                       font=("Inter", 14),
+                                       text_color=COLORS[THEME_MODE]["text_secondary"],
+                                       anchor="w")
+            feature_label.pack(fill="x", pady=5)
+        
+        # Stats section
+        stats_frame = ctk.CTkFrame(parent, fg_color="transparent")
+        stats_frame.pack(fill="x", padx=40, pady=(0, 40))
+        
+        stats_title = ctk.CTkLabel(stats_frame, text="Join Our Community", 
+                                 font=("Inter", 18, "bold"),
+                                 text_color=COLORS[THEME_MODE]["text"])
+        stats_title.pack(anchor="w", pady=(0, 15))
+        
+        # Stats
+        stats = [
+            ("1000+", "Active Users"),
+            ("50K+", "Words Searched"),
+            ("4.8★", "User Rating")
+        ]
+        
+        for value, label in stats:
+            stat_frame = ctk.CTkFrame(stats_frame, fg_color=COLORS[THEME_MODE]["secondary_bg"], corner_radius=10)
+            stat_frame.pack(fill="x", pady=5)
             
-            feature_icon = ctk.CTkLabel(feature_frame, text=icon, 
-                                      font=("Inter", 16, "bold"),
-                                      text_color=COLORS[THEME_MODE]["accent"],
-                                      width=20)
-            feature_icon.pack(side="left", padx=(0, 12))
+            stat_value = ctk.CTkLabel(stat_frame, text=value,
+                                    font=("Inter", 16, "bold"),
+                                    text_color=COLORS[THEME_MODE]["accent"])
+            stat_value.pack(anchor="w", padx=15, pady=(10, 0))
             
-            feature_text = ctk.CTkLabel(feature_frame, text=text,
-                                      font=("Inter", 14),
-                                      text_color=COLORS[THEME_MODE]["text"])
-            feature_text.pack(side="left")
+            stat_label = ctk.CTkLabel(stat_frame, text=label,
+                                    font=("Inter", 12),
+                                    text_color=COLORS[THEME_MODE]["text_secondary"])
+            stat_label.pack(anchor="w", padx=15, pady=(0, 10))
     
     def validate_username_field(self, event=None):
         """Validate username field"""
@@ -641,56 +761,62 @@ class SignupPage(ctk.CTkFrame):
             self.confirm_password.configure(border_color=COLORS[THEME_MODE]["border"])
     
     def signup(self):
-        username = self.username.get()
-        email = self.email.get()
+        username = self.username.get().strip()
+        email = self.email.get().strip()
         password = self.password.get()
         confirm_password = self.confirm_password.get()
         profession = self.profession_var.get()
+        terms_accepted = self.terms_checkbox.get()
         
-        # Validate all fields
-        username_valid, username_error = self.validator.validate_username(username)
-        email_valid, email_error = self.validator.validate_email(email)
-        profession_valid, profession_error = self.validator.validate_profession(profession)
-        password_valid, password_error = self.validator.validate_password(password)
-        password_match_valid, password_match_error = self.validator.validate_password_match(password, confirm_password)
-        
-        # Show validation errors
-        if not username_valid:
-            self.username_error.configure(text=username_error)
-            self.username.configure(border_color="#FF5252")
+        # Quick validation
+        if not all([username, email, password, confirm_password, profession]):
+            messagebox.showerror("Error", "Please fill in all fields!")
             return
         
-        if not email_valid:
-            self.email_error.configure(text=email_error)
-            self.email.configure(border_color="#FF5252")
+        if not terms_accepted:
+            messagebox.showerror("Terms Required", "Please accept the Terms and Conditions to continue.")
             return
         
-        if not profession_valid:
-            self.profession_error.configure(text=profession_error)
+        if password != confirm_password:
+            messagebox.showerror("Error", "Passwords do not match!")
             return
         
-        if not password_valid:
-            self.password_error.configure(text=password_error)
-            self.password.configure(border_color="#FF5252")
-            return
+        # Show loading state
+        self.show_signup_loading_state()
         
-        if not password_match_valid:
-            self.confirm_password_error.configure(text=password_match_error)
-            self.confirm_password.configure(border_color="#FF5252")
-            return
-        
-        # Clear all error messages
-        self.clear_errors()
-        
-        # Create user in database
-        db = DatabaseManager()
-        success, message = db.create_user(username, email, password, profession)
-        
-        if success:
-            messagebox.showinfo("Success", "Account created successfully!")
-            self.show_login_callback()
-        else:
-            messagebox.showerror("Error", message)
+        try:
+            # Use existing db instance or create one
+            if not hasattr(self, 'db'):
+                self.db = DatabaseManager()
+            
+            success, message = self.db.create_user(username, email, password, profession)
+            
+            if success:
+                messagebox.showinfo("Success", "Account created successfully!")
+                self.show_login_callback()
+            else:
+                self.hide_signup_loading_state()
+                messagebox.showerror("Error", message)
+                
+        except Exception as e:
+            self.hide_signup_loading_state()
+            messagebox.showerror("Error", f"Registration failed: {str(e)}")
+    
+    def show_signup_loading_state(self):
+        """Show loading state during signup"""
+        # Disable signup button and show loading
+        for widget in self.winfo_children():
+            if isinstance(widget, ctk.CTkButton) and "Create Account" in widget.cget("text"):
+                widget.configure(text="Creating Account...", state="disabled")
+                break
+    
+    def hide_signup_loading_state(self):
+        """Hide loading state"""
+        # Re-enable signup button
+        for widget in self.winfo_children():
+            if isinstance(widget, ctk.CTkButton) and "Creating Account" in widget.cget("text"):
+                widget.configure(text="Create Account", state="normal")
+                break
     
     def clear_errors(self):
         """Clear all error messages and border colors"""
